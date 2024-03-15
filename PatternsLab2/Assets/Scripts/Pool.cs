@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
+[RequireComponent(typeof(ICreator))]
 public class Pool : MonoBehaviour
 {
-    [SerializeField] private GameObject _prefab;
     [SerializeField] private int _amount = 10;
     private ObjectPool<GameObject> _objects;
+    private ICreator _creator;
     private void Awake()
     {
         _objects = _objects = new ObjectPool<GameObject>(CreateObject, OnGetObject, OnReleaseObject, OnDestroyObject, false, _amount);
+        _creator = GetComponent<ICreator>();
     }
     public GameObject Get()
     {
@@ -22,7 +24,7 @@ public class Pool : MonoBehaviour
     }
     public GameObject CreateObject()
     {
-        GameObject obj = Instantiate(_prefab);
+        GameObject obj = _creator.Create();
         obj.transform.SetParent(transform);
         return obj;
     }
